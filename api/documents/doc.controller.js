@@ -5,10 +5,16 @@ module.exports = {
         const body = req.body;
         addDocument(body, (err, results) => {
             if (err) {
-                console.log(err);
+              console.log(err);
                 return res.json({
                     success: 0,
                     message: "Document already exists."
+                });
+            }
+            if (results === undefined) {
+                return res.json({
+                    success: 0,
+                    message: "Some fields are missing or incorrect format."
                 });
             }
             return res.json({
