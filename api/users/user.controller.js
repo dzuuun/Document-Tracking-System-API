@@ -1,4 +1,4 @@
-const { create, getUserByUserId, getUsers, updateUser, deleteUser, getUserByUserName } = require('./user.service');
+const { createUser, getUserByUserId, getUsers, updateUser, deleteUser, getUserByUserName, assignApprovingBody, updateUserPassword } = require('./user.service');
 const { genSaltSync, hashSync, compareSync } = require('bcrypt');
 const { sign } = require('jsonwebtoken');
 
@@ -7,12 +7,11 @@ module.exports = {
         const body = req.body;
         const salt = genSaltSync(10);
         body.password = hashSync(body.password, salt);
-        create(body, (err, results) => {
+        createUser(body, (err, results) => {
             if (err) {
-                console.log(err);
                 return res.status(500).json({
                     success: 0,
-                    message: "Database connection error."
+                    message: "Username already exists. Try again a different username."
                 });
             }
             return res.status(200).json({
@@ -31,12 +30,12 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 message: "User information retrieved successfully.",
                 data: results
@@ -51,12 +50,12 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 message: "Users information retrieved successfully.",
                 data: results
@@ -66,21 +65,25 @@ module.exports = {
 
     updateUser: (req, res) => {
         const body = req.body;
-        const salt = genSaltSync(10);
-        body.password = hashSync(body.password, salt);
         updateUser(body, (err, results) => {
+            console.log(results);
             if (err) {
                 console.log(err);
-                return;
+                return false;
             }
-            return res.json({
+            if (results.changedRows == 0) {
+                return res.status(500).json({
+                    success: 0,
+                    message: "Contents are still the same."
+                });
+            }
+            return res.status(200).json({
                 success: 1,
                 message: "User information updated successfully."
             });
         });
     },
 
-    //buggy
     deleteUser: (req, res) => {
         const data = req.body;
         deleteUser(data, (err, results) => {
@@ -88,13 +91,13 @@ module.exports = {
                 console.log(err);
                 return;
             }
-            if (!results) {
-                return res.json({
+            if (results.affectedRows == 0) {
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 message: "User deleted successfully."
             });
@@ -110,16 +113,16 @@ module.exports = {
             if (!results) {
                 return res.json({
                     success: 0,
-                    data: "Invalid username or password."
+                    message: "Invalid username or password."
                 });
             }
             const result = compareSync(body.password, results.password);
             if (result) {
                 results.password = undefined;
-                const jsontoken = sign({ result: results }, "qwe1234", {
+                const jsontoken = sign({ result: results }, "my-32-character-ultra-secure-and-ultra-long-secret", {
                     expiresIn: "4h"
                 });
-                return res.json({
+                return res.status(200).json({
                     success: 1,
                     message: "User logged in successfully.",
                     token: jsontoken
@@ -131,5 +134,46 @@ module.exports = {
                 });
             }
         });
-    }
+    },
+
+    assignApprovingBody: (req, res) => {
+        const body = req.body;
+        assignApprovingBody(body, (err, results) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({
+                    success: 0,
+                    message: "User as an Approving Body already exists."
+                });
+            }
+            return res.status(200).json({
+                success: 1,
+                message: "Assigned user as an Approving Body successfully.",
+                data: results
+            })
+        });
+    },
+
+    updateUserPassword: (req, res) => {
+        const body = req.body;
+        const salt = genSaltSync(10);
+        body.password = hashSync(body.password, salt);
+        updateUserPassword(body, (err, results) => {
+            console.log(results);
+            if (err) {
+                console.log(err);
+                return false;
+            }
+            if (results.changedRows == 0) {
+                return res.status(500).json({
+                    success: 0,
+                    message: "Contents are still the same."
+                });
+            }
+            return res.status(200).json({
+                success: 1,
+                message: "User password updated successfully."
+            });
+        });
+    },
 };  

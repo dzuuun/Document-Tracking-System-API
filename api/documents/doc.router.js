@@ -1,4 +1,4 @@
-const { addDocument, getDocById, getDoc, updateDoc, deleteDoc } = require('./doc.controller');
+const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus } = require('./doc.controller');
 const router = require('express').Router();
 const { checkToken  } = require('../../auth/token_validation');
 
@@ -11,10 +11,13 @@ router.patch('/update/',checkToken, updateUser);
 router.delete('/delete/',checkToken, deleteUser);
 router.post('/login', login);
 */
- router.post('/', checkToken, addDocument);
- router.get('/:id', checkToken, getDocById);
- router.get('/', checkToken, getDoc);
- router.patch('/update/',checkToken, updateDoc);
- router.delete('/delete/',checkToken, deleteDoc);
+ router.post('/',  addDocument);
+ router.get('/all/:id',  getDocInfoById);
+ router.get('/', getAllDoc);
+ router.patch('/update/', updateDoc);
+ router.delete('/delete/', deleteDoc);
+ router.get('/user/:id', getDocByUserId);
+ router.get('/trail/:id', getDocTrailById);
+ router.patch('/update/status', updateDocStatus);
 
 module.exports = router;

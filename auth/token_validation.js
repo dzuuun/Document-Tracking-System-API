@@ -5,7 +5,7 @@ module.exports = {
         let token = req.get('authorization');
         if (token) {
             token = token.slice(7);
-            verify(token, "qwe1234", (err, decoded) => {
+            verify(token, "my-32-character-ultra-secure-and-ultra-long-secret", (err, decoded) => {
                 if (err) {
                  res.json({
                      success: 0,

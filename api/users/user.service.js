@@ -1,21 +1,29 @@
 const pool = require('../../db/db');
 
 module.exports = {
-    create: (data, callBack) => {
+    createUser: (data, callBack) => {
         pool.query(
-            'INSERT INTO users(username, password, full_name, position, auth_level) VALUES (?,?,?,?,?)',
-            [
-                data.username,
-                data.password,
-                data.full_name,
-                data.position,
-                data.auth_level
-            ],
+            'SELECT username FROM users WHERE username=?',
+            [data.username],
             (error, results, fields) => {
-                if (error) {
-                    return callBack(error)
+                console.log(results);
+                if (results.length === 0) {
+                    pool.query(
+                        'INSERT INTO users(username, password, full_name, position, auth_level) VALUES (?,?,?,?,?)',
+                        [
+                            data.username,
+                            data.password,
+                            data.full_name,
+                            data.position,
+                            data.auth_level
+                        ],
+                        (error, results, fields) => {
+                            return callBack(null, results);
+                        }
+                    );
+                } else {
+                   return callBack(results);
                 }
-                return callBack(null, results);
             }
         );
     },
@@ -48,13 +56,28 @@ module.exports = {
 
     updateUser: (data, callBack) => {
         pool.query(
-            'UPDATE users SET username=?, password=?, full_name=?, position=?, auth_level=? WHERE user_id = ?',
+            'UPDATE users SET username=?, full_name=?, position=?, auth_level=? WHERE user_id = ?',
             [
                 data.username,
-                data.password,
                 data.full_name,
                 data.position,
                 data.auth_level,
+                data.user_id
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+
+    updateUserPassword: (data, callBack) => {
+        pool.query(
+            'UPDATE users SET password=? WHERE user_id = ?',
+            [
+                data.password,
                 data.user_id
             ],
             (error, results, fields) => {
@@ -74,7 +97,7 @@ module.exports = {
                 if (error) {
                     return callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
     },
@@ -90,6 +113,52 @@ module.exports = {
                 return callBack(null, results[0]);
             }
         );
-    }
+    },
+/*
+    assignApprovingBody: (data, callBack) => {
+        pool.query(
+            'INSERT INTO approving_body(approving_level, approving_office, user_id_fk) VALUES(?,?,?)',
+            [
+                data.approving_level,
+                data.approving_office,
+                data.user_id_fk
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+*/
+assignApprovingBody: (data, callBack) => {
+    pool.query(
+        'SELECT * FROM approving_body WHERE approving_level=? AND approving_office=? AND user_id_fk=?',
+        [
+            data.approving_level,
+            data.approving_office,
+            data.user_id_fk
+        ],
+        (error, results, fields) => {
+            console.log(results);
+            if (results.length === 0) {
+                pool.query(
+                    'INSERT INTO approving_body(approving_level, approving_office, user_id_fk) VALUES(?,?,?)',
+            [
+                data.approving_level,
+                data.approving_office,
+                data.user_id_fk
+            ],
+                    (error, results, fields) => {
+                        return callBack(null, results);
+                    }
+                );
+            } else {
+               return callBack(results);
+            }
+        }
+    );
+},
 
 };

@@ -1,4 +1,4 @@
-const { addDocument, getDocById, getDoc, updateDoc,deleteDoc } = require('./doc.service');
+const { addDocument, getDocInfoById, getAllDoc, updateDoc,deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus } = require('./doc.service');
 
 module.exports = {
     addDocument: (req, res) => {
@@ -8,7 +8,7 @@ module.exports = {
                 console.log(err);
                 return res.status(500).json({
                     success: 0,
-                    message: "Database connection error."
+                    message: "Document already exists."
                 });
             }
             return res.status(200).json({
@@ -19,19 +19,19 @@ module.exports = {
         });
     },
 
-    getDoc: (req, res) => {
-        getDoc((err, results) => {
+    getAllDoc: (req, res) => {
+        getAllDoc((err, results) => {
             if (err) {
                 console.log(err);
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 message: "Documents retrieved successfully.",
                 data: results
@@ -39,20 +39,20 @@ module.exports = {
         });
     },
 
-    getDocById: (req, res) => {
+    getDocInfoById: (req, res) => {
         const id = req.params.id;
-        getDocById(id, (err, results) => {
+        getDocInfoById(id, (err, results) => {
             if (err) {
                 console.log(err);
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 message: "Document retrieved successfully.",
                 data: results
@@ -67,13 +67,13 @@ module.exports = {
                 console.log(err);
                 return false;
             }
-            if (!results) {
-                return res.json({
+            if (results.changedRows == 0) {
+                return res.status(500).json({
                     success: 0,
-                    message: "Failed to update document."
+                    message: "Contents are still the same."
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 message: "Document updated successfully."
             });
@@ -87,16 +87,78 @@ module.exports = {
                 console.log(err);
                 return;
             } 
-            if (!results) {
-                return res.json({
+            if (results.affectedRows == 0) {
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 message: "Document deleted successfully."
             });
         });
-    }
+    },
+
+    getDocByUserId: (req, res) => {
+        const id = req.params.id;
+        getDocByUserId(id, (err, results) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            if (!results) {
+                return res.status(500).json({
+                    success: 0,
+                    message: "Record not found."
+                });
+            }
+            return res.status(200).json({
+                success: 1,
+                message: "Document retrieved successfully.",
+                data: results
+            });
+        });
+    },
+
+    getDocTrailById: (req, res) => {
+        const id = req.params.id;
+        getDocTrailById(id, (err, results) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            if (!results) {
+                return res.status(500).json({
+                    success: 0,
+                    message: "Record not found."
+                });
+            }
+            return res.status(200).json({
+                success: 1,
+                message: "Document retrieved successfully.",
+                data: results
+            });
+        });
+    },
+
+    updateDocStatus: (req, res) => {
+        const body = req.body;
+        updateDocStatus(body, (err, results) => {
+            if (err) {
+                console.log(err);
+                return false;
+            }
+            if (results.changedRows == 0) {
+                return res.status(500).json({
+                    success: 0,
+                    message: "Contents are still the same."
+                });
+            }
+            return res.status(200).json({
+                success: 1,
+                message: "Document's status updated successfully."
+            });
+        });
+    },
 };
