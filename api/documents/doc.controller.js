@@ -1,4 +1,4 @@
-const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus, searchDoc } = require('./doc.service');
+const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus, searchDocByUserId, searchAllDoc, getAllDocByOffice } = require('./doc.service');
 
 module.exports = {
     addDocument: (req, res) => {
@@ -47,12 +47,12 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "Document retrieved successfully.",
                 data: results
@@ -108,12 +108,12 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "Document retrieved successfully.",
                 data: results
@@ -162,9 +162,51 @@ module.exports = {
         });
     },
 
-    searchDoc: (req, res) => {
+    searchDocByUserId: (req, res) => {
         const body = req.body;
-        searchDoc(body, (err, results) => {
+        searchDocByUserId(body, (err, results) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            if (results.length === 0) {
+                return res.status(500).json({
+                    success: 0,
+                    message: "Record not found."
+                });
+            }
+            return res.status(200).json({
+                success: 1,
+                message: "Document retrieved successfully.",
+                data: results
+            });
+        });
+    },
+
+    searchAllDoc: (req, res) => {
+        const body = req.body;
+        searchAllDoc(body, (err, results) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            if (results.length === 0) {
+                return res.status(500).json({
+                    success: 0,
+                    message: "Record not found."
+                });
+            }
+            return res.status(200).json({
+                success: 1,
+                message: "Document retrieved successfully.",
+                data: results
+            });
+        });
+    },
+
+    getAllDocByOffice: (req, res) => {
+        const body = req.body;
+        getAllDocByOffice(body, (err, results) => {
             if (err) {
                 console.log(err);
                 return;

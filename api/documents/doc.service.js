@@ -33,35 +33,10 @@ module.exports = {
             }
         );
     },
-    /*
-    
-        addDocument: (data, callBack) => {
-            pool.query(
-                'INSERT INTO documents(user_id_fk, for_data, from_data, purpose, account_code, project_no, project_title, pr_no, date_posted, rl_no) VALUES (?,?,?,?,?,?,?,?,?,?)',
-                [
-                    data.user_id_fk,
-                    data.for_data,
-                    data.from_data,
-                    data.purpose,
-                    data.account_code,
-                    data.project_no,
-                    data.project_title,
-                    data.pr_no,
-                    data.date_posted,
-                    data.rl_no
-                ],
-                (error, results, fields) => {
-                    if (error) {
-                        return callBack(error);
-                    }
-                    return callBack(null, results);
-                }
-            );
-        },
-    */
+
     getAllDoc: callBack => {
         pool.query(
-            'SELECT documents.document_id, users.user_id, documents.pr_no, documents.project_no, documents.date_posted, users.full_name, users.position FROM documents INNER JOIN users ON documents.user_id_fk = users.user_id;',
+            'SELECT documents.document_id, users.user_id, documents.pr_no, documents.project_title, documents.date_posted, users.full_name, users.position FROM documents INNER JOIN users ON documents.user_id_fk = users.user_id',
             [],
             (error, results, fields) => {
                 if (error) {
@@ -125,7 +100,7 @@ module.exports = {
     },
 
     getDocByUserId: (id, callBack) => {
-        pool.query('SELECT document_id, user_id_fk, pr_no, project_no, date_posted FROM documents WHERE documents.user_id_fk=?',
+        pool.query('SELECT document_id, user_id_fk, pr_no, project_title, date_posted, office_approval FROM documents WHERE documents.user_id_fk=?',
             [id],
             (error, results) => {
                 if (error) {
@@ -166,9 +141,12 @@ module.exports = {
         );
     },
 
-    searchDoc: (data, callBack) => {
+    searchDocByUserId: (data, callBack) => {
         pool.query(
-            'SELECT * FROM `documents` WHERE pr_no LIKE "' + data.pr_no + '%"',
+            'SELECT document_id, user_id_fk, pr_no, project_title, date_posted FROM documents WHERE pr_no LIKE "' + data.pr_no + '%" AND user_id_fk=?',
+            [
+                data.user_id_fk
+            ],
             (error, results, fields) => {
                 if (error) {
                     callBack(error);
@@ -177,4 +155,32 @@ module.exports = {
             }
         );
     },
+
+    searchAllDoc: (data, callBack) => {
+        pool.query(
+            'SELECT document_id, user_id_fk, pr_no, project_title, date_posted FROM documents WHERE pr_no LIKE "' + data.pr_no + '%"',
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+
+    getAllDocByOffice: (data, callBack) => {
+        pool.query(
+            'SELECT     documents.pr_no,     documents.project_title,     documents.date_posted,     users.full_name,     users.position,     approving_body.approving_office FROM     documents     INNER JOIN trail ON trail.document_id_fk = documents.document_id INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE  approving_body.approving_office=?;',
+            [
+                data.office_approval
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+
 };
