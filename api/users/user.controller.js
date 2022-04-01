@@ -9,12 +9,12 @@ module.exports = {
         body.password = hashSync(body.password, salt);
         createUser(body, (err, results) => {
             if (err) {
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "Username already exists. Try again a different username."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "User added successfully.",
                 data: results
@@ -30,12 +30,12 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "User information retrieved successfully.",
                 data: results
@@ -50,12 +50,12 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "Users information retrieved successfully.",
                 data: results
@@ -72,12 +72,12 @@ module.exports = {
                 return false;
             }
             if (results.changedRows == 0) {
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "Contents are still the same."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "User information updated successfully."
             });
@@ -92,12 +92,12 @@ module.exports = {
                 return;
             }
             if (results.affectedRows == 0) {
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "Record not found."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "User deleted successfully."
             });
@@ -122,7 +122,7 @@ module.exports = {
                 const jsontoken = sign({ result: results }, "my-32-character-ultra-secure-and-ultra-long-secret", {
                     expiresIn: "4h"
                 });
-                return res.status(200).json({
+                return res.json({
                     success: 1,
                     message: "User logged in successfully.",
                     token: jsontoken
@@ -141,12 +141,12 @@ module.exports = {
         assignApprovingBody(body, (err, results) => {
             if (err) {
                 console.log(err);
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "User as an Approving Body already exists."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "Assigned user as an Approving Body successfully.",
                 data: results
@@ -165,12 +165,12 @@ module.exports = {
                 return false;
             }
             if (results.changedRows == 0) {
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: "Contents are still the same."
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
                 message: "User password updated successfully."
             });
