@@ -28,37 +28,37 @@ module.exports = {
                         }
                     );
                 } else {
-                   return callBack(results);
+                    return callBack(results);
                 }
             }
         );
     },
-/*
-
-    addDocument: (data, callBack) => {
-        pool.query(
-            'INSERT INTO documents(user_id_fk, for_data, from_data, purpose, account_code, project_no, project_title, pr_no, date_posted, rl_no) VALUES (?,?,?,?,?,?,?,?,?,?)',
-            [
-                data.user_id_fk,
-                data.for_data,
-                data.from_data,
-                data.purpose,
-                data.account_code,
-                data.project_no,
-                data.project_title,
-                data.pr_no,
-                data.date_posted,
-                data.rl_no
-            ],
-            (error, results, fields) => {
-                if (error) {
-                    return callBack(error);
+    /*
+    
+        addDocument: (data, callBack) => {
+            pool.query(
+                'INSERT INTO documents(user_id_fk, for_data, from_data, purpose, account_code, project_no, project_title, pr_no, date_posted, rl_no) VALUES (?,?,?,?,?,?,?,?,?,?)',
+                [
+                    data.user_id_fk,
+                    data.for_data,
+                    data.from_data,
+                    data.purpose,
+                    data.account_code,
+                    data.project_no,
+                    data.project_title,
+                    data.pr_no,
+                    data.date_posted,
+                    data.rl_no
+                ],
+                (error, results, fields) => {
+                    if (error) {
+                        return callBack(error);
+                    }
+                    return callBack(null, results);
                 }
-                return callBack(null, results);
-            }
-        );
-    },
-*/
+            );
+        },
+    */
     getAllDoc: callBack => {
         pool.query(
             'SELECT documents.document_id, users.user_id, documents.pr_no, documents.project_no, documents.date_posted, users.full_name, users.position FROM documents INNER JOIN users ON documents.user_id_fk = users.user_id;',
@@ -129,7 +129,7 @@ module.exports = {
             [id],
             (error, results) => {
                 if (error) {
-                     callBack(error);
+                    callBack(error);
                 }
                 return callBack(null, results);
             }
@@ -157,6 +157,18 @@ module.exports = {
                 data.remarks,
                 data.document_id
             ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+
+    searchDoc: (data, callBack) => {
+        pool.query(
+            'SELECT * FROM `documents` WHERE pr_no LIKE "' + data.pr_no + '%"',
             (error, results, fields) => {
                 if (error) {
                     callBack(error);

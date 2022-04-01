@@ -22,7 +22,7 @@ module.exports = {
                         }
                     );
                 } else {
-                   return callBack(results);
+                    return callBack(results);
                 }
             }
         );
@@ -114,51 +114,34 @@ module.exports = {
             }
         );
     },
-/*
+
     assignApprovingBody: (data, callBack) => {
         pool.query(
-            'INSERT INTO approving_body(approving_level, approving_office, user_id_fk) VALUES(?,?,?)',
+            'SELECT * FROM approving_body WHERE approving_level=? AND approving_office=? AND user_id_fk=?',
             [
                 data.approving_level,
                 data.approving_office,
                 data.user_id_fk
             ],
             (error, results, fields) => {
-                if (error) {
-                    callBack(error);
+                console.log(results);
+                if (results.length === 0) {
+                    pool.query(
+                        'INSERT INTO approving_body(approving_level, approving_office, user_id_fk) VALUES(?,?,?)',
+                        [
+                            data.approving_level,
+                            data.approving_office,
+                            data.user_id_fk
+                        ],
+                        (error, results, fields) => {
+                            return callBack(null, results);
+                        }
+                    );
+                } else {
+                    return callBack(results);
                 }
-                return callBack(null, results);
             }
         );
     },
-*/
-assignApprovingBody: (data, callBack) => {
-    pool.query(
-        'SELECT * FROM approving_body WHERE approving_level=? AND approving_office=? AND user_id_fk=?',
-        [
-            data.approving_level,
-            data.approving_office,
-            data.user_id_fk
-        ],
-        (error, results, fields) => {
-            console.log(results);
-            if (results.length === 0) {
-                pool.query(
-                    'INSERT INTO approving_body(approving_level, approving_office, user_id_fk) VALUES(?,?,?)',
-            [
-                data.approving_level,
-                data.approving_office,
-                data.user_id_fk
-            ],
-                    (error, results, fields) => {
-                        return callBack(null, results);
-                    }
-                );
-            } else {
-               return callBack(results);
-            }
-        }
-    );
-},
 
 };
