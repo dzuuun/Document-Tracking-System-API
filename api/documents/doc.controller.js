@@ -1,4 +1,4 @@
-const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus, searchDocByUserId, searchAllDoc, getAllDocByOffice } = require('./doc.service');
+const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus, searchDocByUserId, searchAllDoc, getAllDocByOffice, updateActionTaken } = require('./doc.service');
 
 module.exports = {
     addDocument: (req, res) => {
@@ -227,6 +227,26 @@ module.exports = {
                 success: 1,
                 message: "Document retrieved successfully.",
                 data: results
+            });
+        });
+    },
+
+    updateActionTaken: (req, res) => {
+        const body = req.body;
+        updateActionTaken(body, (err, results) => {
+            if (err) {
+                console.log(err);
+                return false;
+            }
+            if (results.changedRows == 0) {
+                return res.json({
+                    success: 0,
+                    message: "Contents are still the same."
+                });
+            }
+            return res.json({
+                success: 1,
+                message: "Document's action taken status updated successfully."
             });
         });
     },

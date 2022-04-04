@@ -167,7 +167,7 @@ module.exports = {
             if (results.changedRows == 0) {
                 return res.json({
                     success: 0,
-                    message: "Contents are still the same."
+                    message: "Password is still the same."
                 });
             }
             return res.json({

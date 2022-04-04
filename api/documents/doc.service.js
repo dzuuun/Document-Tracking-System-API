@@ -32,6 +32,7 @@ module.exports = {
                 }
             }
         );
+        // add doc trails here
     },
 
     getAllDoc: callBack => {
@@ -113,7 +114,7 @@ module.exports = {
 
     getDocTrailById: (Id, callBack) => {
         pool.query(
-            'SELECT trail_log.date, trail_log.action_taken, users.full_name, users.position, approving_body.approving_level, documents.remarks FROM trail_log INNER JOIN trail ON trail_log.trail_id_fk = trail.trail_id INNER JOIN documents ON documents.document_id = trail.document_id_fk INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE trail.document_id_fk = ? ORDER BY trail_log.date DESC;',
+            'SELECT trail_log.trail_log_id, trail_log.date, trail_log.action_taken, users.full_name, users.position, approving_body.approving_level, documents.remarks FROM trail_log INNER JOIN trail ON trail_log.trail_id_fk = trail.trail_id INNER JOIN documents ON documents.document_id = trail.document_id_fk INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE trail.document_id_fk = ? -- ORDER BY trail_log.date DESC;',
             [Id],
             (error, results, fields) => {
                 if (error) {
@@ -170,9 +171,25 @@ module.exports = {
 
     getAllDocByOffice: (data, callBack) => {
         pool.query(
-            'SELECT     documents.pr_no,     documents.project_title,     documents.date_posted,     users.full_name,     users.position,     approving_body.approving_office FROM     documents     INNER JOIN trail ON trail.document_id_fk = documents.document_id INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE  approving_body.approving_office=?;',
+            'SELECT documents.document_id, documents.pr_no, documents.project_title, documents.date_posted, users.full_name, users.position, approving_body.approving_office FROM documents INNER JOIN trail ON trail.document_id_fk = documents.document_id INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE  approving_body.approving_office=?',
             [
                 data.office_approval
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+
+    updateActionTaken: (data, callBack) => {
+        pool.query(
+            'UPDATE trail_log SET action_taken=? WHERE trail_log_id=?',
+            [
+                data.action_taken,
+                data.trail_log_id
             ],
             (error, results, fields) => {
                 if (error) {
