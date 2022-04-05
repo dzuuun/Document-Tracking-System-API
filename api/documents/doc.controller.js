@@ -1,4 +1,4 @@
-const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus, searchDocByUserId, searchAllDoc, getAllDocByOffice, updateActionTaken } = require('./doc.service');
+const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus, searchDocByUserId, searchAllDoc, getAllDocByOffice, updateActionTaken, addTrailLog } = require('./doc.service');
 
 module.exports = {
     addDocument: (req, res) => {
@@ -247,6 +247,27 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "Document's action taken status updated successfully."
+            });
+        });
+    },
+
+    addTrailLog: (req, res) => {
+        const body = req.body;
+        addTrailLog(body, (err, results) => {
+            if (err) {
+                console.log(err);
+                return false;
+            }
+            if (results === undefined) {
+                return res.json({
+                    success: 0,
+                    message: "Some fields are missing or incorrect format."
+                });
+            }
+            return res.json({
+                success: 1,
+                message: "Document's trail log added successfully.",
+                data: results
             });
         });
     },

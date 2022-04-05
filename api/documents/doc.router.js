@@ -1,4 +1,4 @@
-const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus, searchDocByUserId, searchAllDoc, getAllDocByOffice, updateActionTaken } = require('./doc.controller');
+const { addDocument, getDocInfoById, getAllDoc, updateDoc, deleteDoc, getDocByUserId, getDocTrailById, updateDocStatus, searchDocByUserId, searchAllDoc, getAllDocByOffice, updateActionTaken, addTrailLog } = require('./doc.controller');
 const router = require('express').Router();
 const { checkToken } = require('../../auth/token_validation');
 
@@ -23,5 +23,6 @@ router.get('/search/foruser', searchDocByUserId);
 router.get('/search/all', searchAllDoc);
 router.get('/office/all', getAllDocByOffice);
 router.patch('/update/action', updateActionTaken);
+router.post('/add/trail/log', addTrailLog);
 
 module.exports = router;

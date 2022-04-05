@@ -122,6 +122,7 @@ module.exports = {
                 const jsontoken = sign({ result: results }, "my-32-character-ultra-secure-and-ultra-long-secret", {
                     expiresIn: "4h"
                 });
+                res.cookie('username', body.username);
                 return res.json({
                     success: 1,
                     message: "User logged in successfully.",

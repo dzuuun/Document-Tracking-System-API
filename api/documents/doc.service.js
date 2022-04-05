@@ -1,6 +1,7 @@
 const pool = require('../../db/db');
 
 
+
 module.exports = {
     addDocument: (data, callBack) => {
         pool.query(
@@ -24,6 +25,40 @@ module.exports = {
                             data.office_approval
                         ],
                         (error, results, fields) => {
+                            var values = [
+                                [results.insertId, 1],
+                                [results.insertId, 2],
+                                [results.insertId, 3],
+                                [results.insertId, 5]
+                            ];
+                            if (data.office_approval === "ADM") {
+                                console.log("adm " + results.insertId);
+                                console.log();
+                                pool.query(
+                                    'INSERT INTO trail(document_id_fk, approving_body_id_fk) VALUES ?',
+                                    [
+                                        values
+                                    ],
+                                    function (err) {
+                                        if (err) throw err;
+                                    }
+                                );
+                            }
+
+                            if (data.office_approval === "OGM") {
+                                console.log("ogm " + results.insertId);
+                                console.log(data);
+                                pool.query(
+                                    'INSERT INTO trail(document_id_fk, approving_body_id_fk) VALUES ?',
+                                    [
+                                        values
+                                    ],
+                                    function (err) {
+                                        if (err) throw err;
+                                    }
+                                );
+                            }
+
                             return callBack(null, results);
                         }
                     );
@@ -32,7 +67,6 @@ module.exports = {
                 }
             }
         );
-        // add doc trails here
     },
 
     getAllDoc: callBack => {
@@ -169,6 +203,7 @@ module.exports = {
         );
     },
 
+    // not sure pa grrr
     getAllDocByOffice: (data, callBack) => {
         pool.query(
             'SELECT documents.document_id, documents.pr_no, documents.project_title, documents.date_posted, users.full_name, users.position, approving_body.approving_office FROM documents INNER JOIN trail ON trail.document_id_fk = documents.document_id INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE  approving_body.approving_office=?',
@@ -183,7 +218,7 @@ module.exports = {
             }
         );
     },
-
+    // wurag not needed
     updateActionTaken: (data, callBack) => {
         pool.query(
             'UPDATE trail_log SET action_taken=? WHERE trail_log_id=?',
@@ -200,4 +235,61 @@ module.exports = {
         );
     },
 
+    addTrailLog: (data, callBack) => {
+        pool.query(
+            'INSERT INTO trail_log(trail_id_fk, action_taken) VALUES (?,?)',
+            [
+                data.trail_id,
+                data.action_taken
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                console.log(results);
+                if (data.action_taken === "Disapproved") {
+                    pool.query(
+                        'UPDATE documents SET status=?, remarks=? WHERE document_id =?',
+                        [
+                            "Rejected",
+                            data.remarks,
+                            data.document_id
+                        ], (error, results, fields) => {
+                            if (error) {
+                                callBack(error);
+                            }
+                        }
+                    );
+                }
+                if (data.action_taken === "Approved") {
+                    pool.query(
+                        'UPDATE documents SET status=? WHERE document_id =?',
+                        [
+                            "Complete",
+                            data.document_id
+                        ], (error, results, fields) => {
+                            if (error) {
+                                callBack(error);
+                            }
+                        }
+                    );
+                }
+
+                if (data.action_taken === "Received" || data.action_taken === "Forwarded") {
+                    pool.query(
+                        'UPDATE documents SET status=? WHERE document_id =?',
+                        [
+                            "Pending",
+                            data.document_id
+                        ], (error, results, fields) => {
+                            if (error) {
+                                callBack(error);
+                            }
+                        }
+                    );
+                }
+                return callBack(null, results);
+            }
+        );
+    }
 };
