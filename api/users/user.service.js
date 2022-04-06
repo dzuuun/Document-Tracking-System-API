@@ -144,4 +144,16 @@ module.exports = {
         );
     },
 
+    getApprovingBody: callBack => {
+        pool.query(
+            'SELECT users.full_name, users.position, users.auth_level, approving_body.approving_level, approving_body.approving_office FROM users INNER JOIN approving_body ON approving_body.user_id_fk = users.user_id',
+            [],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
 };

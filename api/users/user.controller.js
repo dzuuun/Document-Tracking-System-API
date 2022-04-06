@@ -1,4 +1,4 @@
-const { createUser, getUserByUserId, getUsers, updateUser, deleteUser, getUserByUserName, assignApprovingBody, updateUserPassword } = require('./user.service');
+const { createUser, getUserByUserId, getUsers, updateUser, deleteUser, getUserByUserName, assignApprovingBody, updateUserPassword, getApprovingBody } = require('./user.service');
 const { genSaltSync, hashSync, compareSync } = require('bcrypt');
 const { sign } = require('jsonwebtoken');
 
@@ -144,14 +144,36 @@ module.exports = {
                 console.log(err);
                 return res.json({
                     success: 0,
-                    message: "User as an Approving Body already exists."
+                    message: "This user is already an Approving Body."
                 });
             }
             return res.json({
                 success: 1,
-                message: "Assigned user as an Approving Body successfully.",
+                message: "Successfully assigned user as an Approving Body.",
                 data: results
             })
+        });
+    },
+
+    getApprovingBody: (req, res) => {
+        getApprovingBody((err, results) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            if (!results) {
+                console.log(results);
+                return res.json({
+                    success: 0,
+                    message: "No record found."
+                });
+            }
+            console.log(results);
+            return res.json({
+                success: 1,
+                message: "List of Approving Bodies retrieved successfully.",
+                data: results
+            });
         });
     },
 
