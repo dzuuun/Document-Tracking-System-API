@@ -71,7 +71,7 @@ module.exports = {
 
     getAllDoc: callBack => {
         pool.query(
-            'SELECT documents.document_id, users.user_id, documents.pr_no, documents.project_title, documents.date_posted, users.full_name, users.position FROM documents INNER JOIN users ON documents.user_id_fk = users.user_id',
+            'SELECT documents.document_id, users.user_id, documents.pr_no, documents.project_title, DATE_FORMAT(documents.date_posted, "%M %d %Y") AS date_posted, users.full_name, documents.from_data, documents.status FROM documents INNER JOIN users ON documents.user_id_fk = users.user_id',
             [],
             (error, results, fields) => {
                 if (error) {
@@ -84,7 +84,7 @@ module.exports = {
 
     getDocInfoById: (Id, callBack) => {
         pool.query(
-            'SELECT user_id_fk, for_data, from_data, purpose, account_code, project_no, project_title, pr_no, date_posted, rl_no, status, remarks, office_approval FROM documents WHERE documents.document_id = ?',
+            'SELECT user_id_fk, for_data, from_data, purpose, account_code, project_no, project_title, pr_no, DATE_FORMAT(date_posted, "%M %d %Y") AS date_posted, rl_no, status, remarks, office_approval FROM documents WHERE documents.document_id = ?',
             [Id],
             (error, results, fields) => {
                 if (error) {
@@ -135,7 +135,7 @@ module.exports = {
     },
 
     getDocByUserId: (id, callBack) => {
-        pool.query('SELECT document_id, user_id_fk, pr_no, project_title, date_posted, office_approval FROM documents WHERE documents.user_id_fk=?',
+        pool.query('SELECT document_id, user_id_fk, pr_no, project_title, DATE_FORMAT(date_posted, "%M %d %Y") AS date_posted, office_approval FROM documents WHERE documents.user_id_fk=?',
             [id],
             (error, results) => {
                 if (error) {
@@ -148,7 +148,7 @@ module.exports = {
 
     getDocTrailById: (Id, callBack) => {
         pool.query(
-            'SELECT trail_log.trail_log_id, trail_log.date, trail_log.action_taken, users.full_name, users.position, approving_body.approving_level, documents.remarks FROM trail_log INNER JOIN trail ON trail_log.trail_id_fk = trail.trail_id INNER JOIN documents ON documents.document_id = trail.document_id_fk INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE trail.document_id_fk = ? -- ORDER BY trail_log.date DESC;',
+            'SELECT trail_log.trail_log_id,  DATE_FORMAT(trail_log.date, "%M %d %Y %H:%i:%s") AS date, users.full_name, users.position, approving_body.approving_level, trail_log.action_taken FROM trail_log INNER JOIN trail ON trail_log.trail_id_fk = trail.trail_id INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE trail.document_id_fk = ? ORDER BY trail_log.date DESC;',
             [Id],
             (error, results, fields) => {
                 if (error) {
@@ -178,7 +178,7 @@ module.exports = {
 
     searchDocByUserId: (data, callBack) => {
         pool.query(
-            'SELECT document_id, user_id_fk, pr_no, project_title, date_posted FROM documents WHERE pr_no LIKE "' + data.pr_no + '%" AND user_id_fk=?',
+            'SELECT document_id, user_id_fk, pr_no, project_title, DATE_FORMAT(date_posted, "%M %d %Y") AS date_posted, from_data FROM documents WHERE pr_no LIKE "' + data.pr_no + '%" AND user_id_fk=?',
             [
                 data.user_id_fk
             ],
@@ -193,7 +193,7 @@ module.exports = {
 
     searchAllDoc: (data, callBack) => {
         pool.query(
-            'SELECT document_id, user_id_fk, pr_no, project_title, date_posted FROM documents WHERE pr_no LIKE "' + data.pr_no + '%"',
+            'SELECT documents.document_id, users.user_id, documents.pr_no, documents.project_title, DATE_FORMAT(documents.date_posted, "%M %d %Y") AS date_posted, users.full_name, documents.from_data FROM documents INNER JOIN users ON documents.user_id_fk = users.user_id WHERE pr_no LIKE "' + data.pr_no + '%"',
             (error, results, fields) => {
                 if (error) {
                     callBack(error);
@@ -206,7 +206,7 @@ module.exports = {
     // not sure pa grrr
     getAllDocByOffice: (data, callBack) => {
         pool.query(
-            'SELECT documents.document_id, documents.pr_no, documents.project_title, documents.date_posted, users.full_name, users.position, approving_body.approving_office FROM documents INNER JOIN trail ON trail.document_id_fk = documents.document_id INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE  approving_body.approving_office=?',
+            'SELECT documents.document_id, documents.pr_no, documents.project_title, DATE_FORMAT(documents.date_posted, "%M %d %Y") AS date_posted, users.full_name, users.position, approving_body.approving_office FROM documents INNER JOIN trail ON trail.document_id_fk = documents.document_id INNER JOIN approving_body ON trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = approving_body.user_id_fk WHERE  approving_body.approving_office=?',
             [
                 data.office_approval
             ],
@@ -279,7 +279,7 @@ module.exports = {
                     pool.query(
                         'UPDATE documents SET status=? WHERE document_id =?',
                         [
-                            "Pending",
+                            "Routing for approval",
                             data.document_id
                         ], (error, results, fields) => {
                             if (error) {

@@ -23,6 +23,6 @@ router.get('/search/foruser', searchDocByUserId);
 router.get('/search/all', searchAllDoc);
 router.get('/office/all', getAllDocByOffice);
 router.patch('/update/action', updateActionTaken);
-router.post('/add/trail/log', addTrailLog);
+router.post('/trail/add/log', addTrailLog);
 
 module.exports = router;
