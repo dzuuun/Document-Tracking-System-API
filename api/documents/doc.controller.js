@@ -40,6 +40,7 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "Documents retrieved successfully.",
+                count: results.length,
                 data: results
             });
         });
@@ -60,7 +61,7 @@ module.exports = {
             }
             return res.json({
                 success: 1,
-                message: "Document retrieved successfully.",
+                message: "Document's information retrieved successfully.",
                 data: results
             });
         });
@@ -122,6 +123,7 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "Document retrieved successfully.",
+                count: results.length,
                 data: results
             });
         });
@@ -143,6 +145,7 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "Document retrieved successfully.",
+                count: results.length,
                 data: results
             });
         });
@@ -184,6 +187,7 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "Document retrieved successfully.",
+                count: results.length,
                 data: results
             });
         });
@@ -205,6 +209,7 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "Document retrieved successfully.",
+                count: results.length,
                 data: results
             });
         });
@@ -226,6 +231,7 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "Document retrieved successfully.",
+                count: results.length,
                 data: results
             });
         });

@@ -58,6 +58,7 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "Users information retrieved successfully.",
+                count: results.length,
                 data: results
             });
         });
@@ -172,6 +173,7 @@ module.exports = {
             return res.json({
                 success: 1,
                 message: "List of Approving Bodies retrieved successfully.",
+                count: results.length,
                 data: results
             });
         });
