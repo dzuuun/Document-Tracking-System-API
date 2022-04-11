@@ -104,8 +104,8 @@ module.exports = {
 
     getUserByUserName: (username, callBack) => {
         pool.query(
-            'SELECT * FROM users where username = ?',
-            [username],
+            'SELECT * FROM users LEFT JOIN approving_body ON users.user_id = approving_body.user_id_fk WHERE username = ?',
+                        [username],
             (error, results, fields) => {
                 if (error) {
                     callBack(error);

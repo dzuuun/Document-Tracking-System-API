@@ -9,7 +9,7 @@ module.exports = {
         body.password = hashSync(body.password, salt);
         createUser(body, (err, results) => {
             if (err) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Username already exists. Try again a different username."
                 });
@@ -30,7 +30,7 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -50,7 +50,7 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -73,7 +73,7 @@ module.exports = {
                 return false;
             }
             if (results.changedRows == 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Contents are still the same."
                 });
@@ -93,7 +93,7 @@ module.exports = {
                 return;
             }
             if (results.affectedRows == 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -112,7 +112,7 @@ module.exports = {
                 console.log(err);
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Invalid username or password."
                 });
@@ -127,10 +127,15 @@ module.exports = {
                 return res.json({
                     success: 1,
                     message: "User logged in successfully.",
+                    role: results.auth_level,
+                    approving_body: {
+                        approving_office: results.approving_office,
+                        approving_id: results.approving_body_id,
+                    },
                     token: jsontoken
                 });
             } else {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Invalid username or password."
                 });
@@ -143,7 +148,7 @@ module.exports = {
         assignApprovingBody(body, (err, results) => {
             if (err) {
                 console.log(err);
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "This user is already an Approving Body."
                 });
@@ -164,7 +169,7 @@ module.exports = {
             }
             if (!results) {
                 console.log(results);
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "No record found."
                 });
@@ -190,7 +195,7 @@ module.exports = {
                 return false;
             }
             if (results.changedRows == 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Password is still the same."
                 });

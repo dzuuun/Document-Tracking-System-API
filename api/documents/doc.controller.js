@@ -6,13 +6,13 @@ module.exports = {
         addDocument(body, (err, results) => {
             if (err) {
               console.log(err);
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Document already exists."
                 });
             }
             if (results === undefined) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Some fields are missing or incorrect format."
                 });
@@ -32,7 +32,7 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -54,7 +54,7 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -75,7 +75,7 @@ module.exports = {
                 return false;
             }
             if (results.changedRows == 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Contents are still the same."
                 });
@@ -95,7 +95,7 @@ module.exports = {
                 return;
             }
             if (results.affectedRows == 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -115,7 +115,7 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -137,7 +137,7 @@ module.exports = {
                 return;
             }
             if (!results) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -159,7 +159,7 @@ module.exports = {
                 return false;
             }
             if (results.changedRows == 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Contents are still the same."
                 });
@@ -179,7 +179,7 @@ module.exports = {
                 return;
             }
             if (results.length === 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -201,7 +201,7 @@ module.exports = {
                 return;
             }
             if (results.length === 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -223,7 +223,7 @@ module.exports = {
                 return;
             }
             if (results.length === 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Record not found."
                 });
@@ -245,7 +245,7 @@ module.exports = {
                 return false;
             }
             if (results.changedRows == 0) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Contents are still the same."
                 });
@@ -265,7 +265,7 @@ module.exports = {
                 return false;
             }
             if (results === undefined) {
-                return res.json({
+                return res.status(500).json({
                     success: 0,
                     message: "Some fields are missing or incorrect format."
                 });
