@@ -6,7 +6,6 @@ module.exports = {
             'SELECT username FROM users WHERE username=?',
             [data.username],
             (error, results, fields) => {
-                console.log(results);
                 if (results.length === 0) {
                     pool.query(
                         'INSERT INTO users(username, password, full_name, position, auth_level) VALUES (?,?,?,?,?)',
@@ -124,7 +123,6 @@ module.exports = {
                 data.user_id_fk
             ],
             (error, results, fields) => {
-                console.log(results);
                 if (results.length === 0) {
                     pool.query(
                         'INSERT INTO approving_body(approving_level, approving_office, user_id_fk) VALUES(?,?,?)',

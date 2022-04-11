@@ -1,7 +1,5 @@
 const pool = require('../../db/db');
 
-
-
 module.exports = {
     addDocument: (data, callBack) => {
         pool.query(
@@ -25,40 +23,32 @@ module.exports = {
                             data.office_approval
                         ],
                         (error, results, fields) => {
-                            var values = [
-                                [results.insertId, 1],
-                                [results.insertId, 2],
-                                [results.insertId, 3],
-                                [results.insertId, 5]
-                            ];
-                            if (data.office_approval === "ADM") {
-                                console.log("adm " + results.insertId);
-                                console.log();
-                                pool.query(
-                                    'INSERT INTO trail(document_id_fk, approving_body_id_fk) VALUES ?',
-                                    [
-                                        values
-                                    ],
-                                    function (err) {
-                                        if (err) throw err;
-                                    }
-                                );
-                            }
-
-                            if (data.office_approval === "OGM") {
-                                console.log("ogm " + results.insertId);
-                                console.log(data);
-                                pool.query(
-                                    'INSERT INTO trail(document_id_fk, approving_body_id_fk) VALUES ?',
-                                    [
-                                        values
-                                    ],
-                                    function (err) {
-                                        if (err) throw err;
-                                    }
-                                );
-                            }
-
+                            pool.query(
+                                'SELECT approving_body_id from approving_body WHERE NOT approving_level="Recommending Approval"',
+                                [],
+                                (error, result, fields) => {
+                                    pool.query(
+                                        'SELECT approving_body_id from approving_body WHERE approving_level="Recommending Approval" AND approving_office = ?',
+                                        [data.office_approval],
+                                        (error, res, fields) => {
+                                            var values = [
+                                                [results.insertId, result[0].approving_body_id],
+                                                [results.insertId, res[0].approving_body_id],
+                                                [results.insertId, result[1].approving_body_id],
+                                                [results.insertId, result[2].approving_body_id]
+                                            ];
+                                            console.log(data.office_approval + " " + results.insertId);
+                                            pool.query(
+                                                'INSERT INTO trail(document_id_fk, approving_body_id_fk) VALUES ?',
+                                                [values],
+                                                function (err) {
+                                                    if (err) throw err;
+                                                }
+                                            );
+                                        }
+                                    );
+                                }
+                            );
                             return callBack(null, results);
                         }
                     );
@@ -247,7 +237,6 @@ module.exports = {
                 if (error) {
                     callBack(error);
                 }
-                console.log(results);
                 if (data.action_taken === "Disapproved") {
                     pool.query(
                         'UPDATE documents SET status=?, remarks=? WHERE document_id =?',

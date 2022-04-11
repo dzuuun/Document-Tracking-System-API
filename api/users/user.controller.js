@@ -67,7 +67,6 @@ module.exports = {
     updateUser: (req, res) => {
         const body = req.body;
         updateUser(body, (err, results) => {
-            console.log(results);
             if (err) {
                 console.log(err);
                 return false;
@@ -107,6 +106,8 @@ module.exports = {
 
     login: (req, res) => {
         const body = req.body;
+        console.log(body);
+        
         getUserByUserName(body.username, (err, results) => {
             if (err) {
                 console.log(err);
@@ -123,7 +124,14 @@ module.exports = {
                 const jsontoken = sign({ result: results }, "my-32-character-ultra-secure-and-ultra-long-secret", {
                     expiresIn: "4h"
                 });
-                res.cookie('username', body.username);
+                
+                console.log(results);
+                res.cookie('username', results.username);
+                res.cookie('role', results.auth_level);
+                res.cookie('token', jsontoken);
+                res.cookie('approving body office', results.approving_office);
+                res.cookie('approving body id', results.approving_body_id);
+               
                 return res.json({
                     success: 1,
                     message: "User logged in successfully.",
@@ -133,6 +141,7 @@ module.exports = {
                         approving_id: results.approving_body_id,
                     },
                     token: jsontoken
+                    
                 });
             } else {
                 return res.status(500).json({
@@ -168,13 +177,11 @@ module.exports = {
                 return;
             }
             if (!results) {
-                console.log(results);
                 return res.status(500).json({
                     success: 0,
                     message: "No record found."
                 });
             }
-            console.log(results);
             return res.json({
                 success: 1,
                 message: "List of Approving Bodies retrieved successfully.",
@@ -189,7 +196,6 @@ module.exports = {
         const salt = genSaltSync(10);
         body.password = hashSync(body.password, salt);
         updateUserPassword(body, (err, results) => {
-            console.log(results);
             if (err) {
                 console.log(err);
                 return false;
