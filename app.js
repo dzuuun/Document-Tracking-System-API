@@ -5,6 +5,9 @@ app.use(express.json());
 var bodyParser = require('body-parser')
 app.use(bodyParser.json());
 const docRouter = require('./api/documents/doc.router');
+var cors = require('cors');
+
+app.use(cors());
 
 app.use('/api/users', userRouter);
 app.use('/api/documents', docRouter);

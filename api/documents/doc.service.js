@@ -27,6 +27,7 @@ module.exports = {
                                 'SELECT approving_body_id from approving_body WHERE NOT approving_level="Recommending Approval"',
                                 [],
                                 (error, result, fields) => {
+                                    console.log(result);
                                     pool.query(
                                         'SELECT approving_body_id from approving_body WHERE approving_level="Recommending Approval" AND approving_office = ?',
                                         [data.office_approval],
@@ -197,9 +198,9 @@ module.exports = {
     // not sure pa grrr
     getAllDocByOffice: (data, callBack) => {
         pool.query(
-            'SELECT documents.document_id, documents.pr_no, documents.project_title, DATE_FORMAT( documents.date_posted, "%M %d, %Y" ) AS date_posted, users.full_name, users.position, documents.office_approval FROM documents INNER JOIN users ON users.user_id = documents.user_id_fk WHERE documents.office_approval = ?',
+            'SELECT  documents.document_id, users.user_id, documents.pr_no, documents.project_title, DATE_FORMAT(documents.date_posted, "%M %d, %Y") AS date_posted,users.full_name, documents.from_data, documents.status FROM documents INNER JOIN trail ON trail.document_id_fk = documents.document_id INNER JOIN approving_body on trail.approving_body_id_fk = approving_body.approving_body_id INNER JOIN users ON users.user_id = documents.user_id_fk WHERE approving_body.approving_body_id = ?',
             [
-                data.office_approval
+                data.approving_body_id
             ],
             (error, results, fields) => {
                 if (error) {
