@@ -120,7 +120,7 @@ module.exports = {
             const result = compareSync(body.password, results.password);
             if (result) {
                 results.password = undefined;
-                const jsontoken = sign({ result: results }, "my-32-character-ultra-secure-and-ultra-long-secret", {
+                const jsontoken = sign({ result: results }, process.env.SECRET_KEY , {
                     expiresIn: "4h"
                 });
                 return res.json({
