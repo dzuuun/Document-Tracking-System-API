@@ -7,6 +7,9 @@ app.use(bodyParser.json());
 const docRouter = require('./api/documents/doc.router');
 var cors = require('cors');
 require('dotenv').config()
+var morgan = require('morgan');
+
+app.use(morgan('combined'))
 
 
 app.use(cors());
